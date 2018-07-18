@@ -5,39 +5,43 @@
 #include <map>
 #include <string>
 
+#include <nlohmann/json.hpp>
+
 using std::string;
+using json = nlohmann::json;
+
+struct input_data {
+    double air_temp = 20.0;
+    string uom = "C";
+};
 
 void calculate (const std::map<std::string, std::string>& query_params) {
     std::cout << json_header();
     auto it = query_params.find("air_temp");
-    auto air_temp = 20.0;
 
-    std::map<string, string> output;
+    input_data input;
     if (it != query_params.end()) {
-        air_temp = atof(it->second.c_str());
+        input.air_temp = atof(it->second.c_str());
     }
-    //***CAMERON EDITS***
     it= query_params.find("uom");
     if (it != query_params.end()) {
-        char uom = it -> second[0];
-        uom = toupper(uom);
-        if (uom == 'F') {
-            air_temp = cvt_f_c(air_temp);
+        input.uom = it -> second[0];
+        input.uom = toupper(input.uom[0]);
+        if (input.uom == "F") {
+            input.air_temp = cvt_f_c(input.air_temp);
         }
     }
-    //output.emplace("air_temp", std::to_string(air_temp));
-    output.emplace("air_temp", jsonify(std::to_string(air_temp), "C"));
-    //output.emplace("air_temp_uom", "C");
 
-    std::cout << "{\n\"in\": " << jsonify(output) << ",";
+    json j;
+    j["in"]["air_temp"] = input.air_temp;
+    j["in"]["uom"] = input.uom;
 
-    output.clear();
-    auto e =  vapor_pres_wmo (air_temp);
-    output.emplace("vapor_pressure", jsonify(std::to_string(e), "hPa"));
+    j["out"]["vapor_pressure"]["value"] = vapor_pres_wmo (input.air_temp);
+    j["out"]["vapor_pressure"]["uom"] = "hPa";
 
-    auto ah =  abs_humidity (air_temp);
-    output.emplace("absolute_humidity", jsonify(std::to_string(ah), "kg/m^3"));
+    j["out"]["absolute_humidity"]["value"] = abs_humidity (input.air_temp);
+    j["out"]["absolute_humidity"]["uom"] = "kg/m**3";
 
-    std::cout << "\n\"out\": " << jsonify(output) << "\n}\n";
+    std::cout << j.dump(4);
 }
 
