@@ -5,7 +5,7 @@ absolute humidity using the standard WMO algorithm.
 ## usage
 
 ```
-http://foo.com/abs\_humidity?air\_temp=20
+http://localhost:8080/cgi-bin/abs_humidity?air_temp=20
 ```
 
 returns
