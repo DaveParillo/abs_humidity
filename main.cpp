@@ -2,7 +2,7 @@
 // A simple cgi program to echo input CGI query string
 // Can be used as a CGI template
 //
-// Compile with: 
+// Compile with:
 // c++ -std=c++11 -Wall -Wextra -pedantic *.cpp -o cgi
 //
 // Example output
@@ -65,8 +65,11 @@ int main(int argc, char** argv) {
     process_args(argc, argv);
     count = in.read();
 
-    calculate(in.kvp);
-
+    if (isvalid(in.kvp)) {
+      calculate(in.kvp);
+    } else {
+        // tell the user what they did wrong
+    }
     return count;
 }
 

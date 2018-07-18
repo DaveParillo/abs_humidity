@@ -16,6 +16,15 @@ void calculate (const std::map<std::string, std::string>& query_params) {
     if (it != query_params.end()) {
         air_temp = atof(it->second.c_str());
     }
+    //***CAMERON EDITS***
+    it= query_params.find("uom");
+    if (it != query_params.end()) {
+        char uom = it -> second[0];
+        uom = toupper(uom);
+        if (uom == 'F') {
+            air_temp = cvt_f_c(air_temp);
+        }
+    }
     //output.emplace("air_temp", std::to_string(air_temp));
     output.emplace("air_temp", jsonify(std::to_string(air_temp), "C"));
     //output.emplace("air_temp_uom", "C");
