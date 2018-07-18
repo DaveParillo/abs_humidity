@@ -68,7 +68,18 @@ int main(int argc, char** argv) {
     if (isvalid(in.kvp)) {
       calculate(in.kvp);
     } else {
-        // tell the user what they did wrong
+        std::cout << "Content-type: text/html\n\n"
+                  << "<html>\n"
+                  << "<head>\n"
+                  << "<title>Bad Request</title>\n"
+                  << "</head>\n"
+                  << "<body>\n"
+                  << "<H1>Bad Request</H1>\n"
+                  << "<p>Error 400: Requires valid input.</p>\n"
+                  << "<p>This program requires the temperature of the air in Celsius or Fahrenheit.\n"
+                  << "An example of a valid input would be air_temp=48&uom=F</p>\n"
+                  << "</body>\n"
+                  << "</html>\n";
     }
     return count;
 }
