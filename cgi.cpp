@@ -11,13 +11,20 @@
 #include <sstream>
 #include <utility>
 
+#include <nlohmann/json.hpp>
+
 using std::string;
 using std::size_t;
+using json = nlohmann::json;
+
 
 size_t cgi::read() {
+    json j;
     auto rm = std::getenv("REQUEST_METHOD");
     if (rm == nullptr) {
-        std::cout << json_header() << jsonify("CGI Error: No method specified.");
+        json j;
+        j["message"] = "CGI Error: No method specified.";
+        std::cout << json_header() << j << std::endl;
         return 0;
     }
     string method(rm);
@@ -30,7 +37,7 @@ size_t cgi::read() {
     } else if (method == "POST") {
         std::string line;
         std::string doc;
-        constexpr auto limit = 1024u * 10u; 
+        constexpr auto limit = 1024u * 10u;
         while (getline(std::cin, line) && doc.size() < limit) {
             doc += line;
             doc.append(1, '\n');
@@ -49,10 +56,7 @@ size_t cgi::parse_query_string(const string& qs) {
 
     std::istringstream iss(qs);
     string pair;
-    while (std::getline(iss, pair, '&')) { 
-        //const string space = " ";
-        //std::replace(pair.begin(), pair.end(), '+', ' ');
-        //find_replace(&pair, "%20", space);
+    while (std::getline(iss, pair, '&')) {
         auto decoded = decode(pair);
         auto pos = decoded.find('=');
         if (pos != std::string::npos) {

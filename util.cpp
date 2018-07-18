@@ -6,8 +6,12 @@
 #include <sstream>
 #include <utility>
 
+#include <nlohmann/json.hpp>
+
 using std::string;
 using std::size_t;
+
+using json = nlohmann::json;
 
 char to_hex(const char code) {
   static char hex[] = "0123456789abcdef";
@@ -19,7 +23,7 @@ char from_hex(const char ch) {
 }
 
 string decode(const string& source) {
-    // TODO: this would much more efficient if 
+    // TODO: this would much more efficient if
     // instead of iterating over every character,
     // jump to each % and +
     std::ostringstream dest;
@@ -43,54 +47,5 @@ string decode(const string& source) {
 
 string json_header () {
     return "Content-type: application/json\n\n";
-}
-
-string jsonify(const string& message) {
-    return "{\"msg\":\"" + message + "\"}\n"; 
-}
-
-bool numeric(string value) {
-    auto ss = std::stringstream(value);
-    double tmp;
-    ss >> tmp;
-    return !(!ss || ss.rdbuf()->in_avail() > 0);
-}
-
-string jsonify(const string& value, const string& uom) {
-    string msg = "{"; 
-    if (numeric(value)) {
-        msg += "\"value\": " + value + ',';
-    } else {
-        msg += "\"value\": \"" + value + "\",";
-    }
-    msg += "\"uom\": \"" + uom + "\"}";
-    return msg; 
-}
-
-string jsonify(const std::map<string,string>& content) {
-    string msg = "{"; 
-    string json = msg; 
-    for (const auto& pair: content) {
-        if (numeric(pair.second)) {
-            msg += '"' + pair.first + "\":" + pair.second + ','; 
-        } else if (pair.second[0] == json[0] ) {
-            msg += '"' + pair.first + "\":" + pair.second + ','; 
-        } else {
-            msg += '"' + pair.first + "\":\"" + pair.second + "\","; 
-        }
-    }
-    msg.pop_back();
-    msg += "}"; 
-    return msg;
-}
-
-void find_replace(string* source, 
-        const string& old_string, 
-        const string& new_string) {
-    for(std::string::size_type i = 0; (i = source->find(old_string, i)) != string::npos;)
-    {
-        source->replace(i, old_string.length(), new_string);
-        i += new_string.length();
-    }
 }
 

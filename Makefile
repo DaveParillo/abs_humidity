@@ -10,6 +10,8 @@ ifneq ($(OS),Windows_NT)
 	CXXFLAGS += -DHAVE_SETENV
 endif
 
+INCLUDES=-I/usr/local/include/nlohmann
+
 PROGS = cgi
 
 all: $(PROGS)
