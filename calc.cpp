@@ -10,13 +10,6 @@
 using std::string;
 using json = nlohmann::json;
 
-//I think that by having a default setting, the program just skips the error screen.
-//Because the error screen is only triggered by a lack of input, then by setting there
-//to be a default setting of 20 degrees Celsius, the program detects something within
-//the query string, so the error/help screen doesn't show up. I tried deleting it,
-//but then the output is still the regular output screen but with basically zero for the
-//outputs (e.g.
-
 struct input_data {
     double air_temp = 20.0;
     string uom = "C";
@@ -38,16 +31,15 @@ void calculate (const std::map<std::string, std::string>& query_params) {
             input.air_temp = cvt_f_c(input.air_temp);
         }
     }
-
+//*Updated uom output; the "in:" would always show whether it was F or C input, but the value of the air temperature in "in:"
+//is always in Celsius, hence the need to change the "in:" for uom to always show C*
     json j;
     j["in"]["air_temp"] = input.air_temp;
-    j["in"]["uom"] = input.uom;
+    j["in"]["uom"] = "C";
 
     if (input.air_temp >= -45 && input.air_temp <= 60) {
             j["out"]["vapor_pressure"]["value"] = vapor_pres_wmo (input.air_temp);
     }
-    //I'm not sure if you want to have it as an html doc, nor do I know how I'd go about properly formatting it, so I plan on
-    //using the below message as a placeholder for when you want a more official output to be read. It compiles and works perfectly.
     else {
         std::cout << "Bad Request\n"
                   << "Error 400: Requires valid input.\n"
@@ -60,6 +52,9 @@ void calculate (const std::map<std::string, std::string>& query_params) {
     j["out"]["absolute_humidity"]["value"] = abs_humidity (input.air_temp);
     j["out"]["absolute_humidity"]["uom"] = "kg/m**3";
 
+    //units: g/m**3
+    //j["out"]["absolute_humidity"]["value"] = (abs_humidity (input.air_temp))/1000;
+    //j["out"]["absolute_humidity"]["uom"] = "g/m**3";]h
     std::cout << j.dump(4);
 }
 
