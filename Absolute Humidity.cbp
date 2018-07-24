@@ -33,7 +33,8 @@
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
-			<Add directory="C:/Users/CamTom/Documents/SPAWAR/json/single_include" />
+			<Add directory="../include/json/single_include" />
+			<Add directory="../include/doctest" />
 		</Compiler>
 		<Unit filename="calc.cpp" />
 		<Unit filename="calc.h" />
