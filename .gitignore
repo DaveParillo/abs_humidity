@@ -1,3 +1,7 @@
+# CodeBlocks
+*.layout
+*.depend
+
 # Prerequisites
 *.d
 
