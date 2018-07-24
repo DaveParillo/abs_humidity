@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Absolute Humidity Unit Tests" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="test-util">
+				<Option output="bin/test-util" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/" />
+				<Option object_output="obj/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="test-calc">
+				<Option output="bin/test-calc" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/" />
+				<Option object_output="obj/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-pedantic" />
+			<Add option="-Wextra" />
+			<Add option="-Wall" />
+			<Add option="-std=c++11" />
+			<Add option="-ansi" />
+			<Add option="-U__STRICT_ANSI__" />
+			<Add directory="../../include/json/single_include" />
+			<Add directory="../../include/doctest" />
+		</Compiler>
+		<Unit filename="../calc.cpp">
+			<Option target="test-calc" />
+		</Unit>
+		<Unit filename="../calc.h">
+			<Option target="test-calc" />
+		</Unit>
+		<Unit filename="../util.cpp" />
+		<Unit filename="../util.h" />
+		<Unit filename="test-calc.cpp">
+			<Option target="test-calc" />
+		</Unit>
+		<Unit filename="test-util.cpp">
+			<Option target="test-util" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars set="cgi" />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
