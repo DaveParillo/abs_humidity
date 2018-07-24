@@ -76,8 +76,14 @@ int main(int argc, char** argv) {
                   << "<body>\n"
                   << "<H1>Bad Request</H1>\n"
                   << "<p>Error 400: Requires valid input.</p>\n"
-                  << "<p>This program requires the temperature of the air in Celsius or Fahrenheit.\n"
-                  << "An example of a valid input would be air_temp=48&uom=F</p>\n"
+                  << "<p>This program is an Absolute Humidity calculator. It calculates the vapor pressure\n"
+                  << "and absolute humidity using an input air temperature.</p>\n"
+                  << "<p>In order to properly function, the input air temperature must be an air temperature\n"
+                  << "in Celsius or Fahrenheit.</p>"
+                  << "<p>An example of valid input is shown below:</p>\n"
+                  << "<p>air_temp=48&uom=Fahrenheit</p>\n"
+                  << "<p>The number is the temperature, and the unit of measure (uom) can either be input as Celsius (C)\n"
+                  << "or Fahrenheit (F). Either format works for this program.</p>\n"
                   << "</body>\n"
                   << "</html>\n";
     }
