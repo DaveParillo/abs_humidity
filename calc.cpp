@@ -49,12 +49,13 @@ void calculate (const std::map<std::string, std::string>& query_params) {
     }
     j["out"]["vapor_pressure"]["uom"] = "hPa";
 
+    //units: kg/m**3
     j["out"]["absolute_humidity"]["value"] = abs_humidity (input.air_temp);
     j["out"]["absolute_humidity"]["uom"] = "kg/m**3";
 
     //units: g/m**3
-    //j["out"]["absolute_humidity"]["value"] = (abs_humidity (input.air_temp))/1000;
-    //j["out"]["absolute_humidity"]["uom"] = "g/m**3";]h
+    j["out_secondary"]["absolute_humidity"]["value"] = (abs_humidity (input.air_temp))/1000;
+    j["out_secondary"]["absolute_humidity"]["uom"] = "g/m**3";
     std::cout << j.dump(4);
 }
 
