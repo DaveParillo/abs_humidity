@@ -19,6 +19,7 @@
 //
 #include "calc.h"
 #include "cgi.h"
+#include "util.h"
 
 #include <cstring>
 #include <cstdlib>
@@ -26,7 +27,10 @@
 #include <map>
 #include <string>
 
+#include <nlohmann/json.hpp>
+
 using std::string;
+using json = nlohmann::json;
 
 string version() {
   return "version 1.0.0";
@@ -56,40 +60,6 @@ static void help(const char* name) {
 
 // process command line arguments,
 // faking a CGI request, if needed.
-void process_args(int argc, char** argv);
-
-int main(int argc, char** argv) {
-    cgi in;
-    size_t count = 0;
-
-    process_args(argc, argv);
-    count = in.read();
-
-    if (isvalid(in.kvp)) {
-      calculate(in.kvp);
-    } else {
-        std::cout << "Content-type: text/html\n\n"
-                  << "<html>\n"
-                  << "<head>\n"
-                  << "<title>Bad Request</title>\n"
-                  << "</head>\n"
-                  << "<body>\n"
-                  << "<H1>Bad Request</H1>\n"
-                  << "<p>Error 400: Requires valid input.</p>\n"
-                  << "<p>This program is an Absolute Humidity calculator. It calculates the vapor pressure\n"
-                  << "and absolute humidity using an input air temperature.</p>\n"
-                  << "<p>In order to properly function, the input air temperature must be an air temperature\n"
-                  << "in Celsius or Fahrenheit.</p>"
-                  << "<p>An example of valid input is shown below:</p>\n"
-                  << "<p>air_temp=48&uom=Fahrenheit</p>\n"
-                  << "<p>The number is the temperature, and the unit of measure (uom) can either be input as Celsius (C)\n"
-                  << "or Fahrenheit (F). Either format works for this program.</p>\n"
-                  << "</body>\n"
-                  << "</html>\n";
-    }
-    return count;
-}
-
 void process_args(int argc, char** argv) {
     for (int i=1; i < argc; ++i) {
         if (!std::strcmp(argv[i], "-h") || !std::strcmp(argv[i], "--help")) {
@@ -113,3 +83,26 @@ void process_args(int argc, char** argv) {
     }
 }
 
+int main(int argc, char** argv) {
+    cgi in;
+
+    process_args(argc, argv);
+    auto count = in.read();
+    if (count == 0) {
+        return count;
+    }
+
+    // We got some kind of GET request.
+    // Validate and respond.
+    response_t response;
+    response = isvalid(in.kvp);
+
+    if (response.valid) {
+      std::cout << json_header();
+      response = calculate(response);
+    } else {
+      std::cout << json_header(StatusCode::bad);
+    }
+    std::cout << response.doc.dump(4) << std::endl;
+    return count;
+}

@@ -45,7 +45,17 @@ string decode(const string& source) {
     return dest.str();
 }
 
-string json_header () {
-    return "Content-type: application/json\n\n";
+string json_header (StatusCode code) {
+    std::ostringstream head;
+    head << "HTTP/1.1 " << int(code) << ' ';
+
+    if (code == StatusCode::ok) {
+        head << "OK\n";
+    } else if (code == StatusCode::bad) {
+        head << "Bad Request\n";
+    }
+    head << "Content-type: application/json\n\n";
+
+    return head.str();
 }
 

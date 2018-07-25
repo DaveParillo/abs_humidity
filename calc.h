@@ -4,6 +4,20 @@
 #include <map>
 #include <string>
 
+#include <nlohmann/json.hpp>
+
+// A pair of response values from the calculator
+struct response_t {
+    bool valid = false;
+    nlohmann::json doc;
+    response_t() = default;
+    response_t(bool v, nlohmann::json d) 
+        : valid{v}, doc{d} 
+    {}
+    response_t(const response_t&) = default;
+    response_t& operator=(const response_t& other) = default;
+};
+
 // Absolute Humidity calculator
 //
 // Absolute Humidity is defined as:
@@ -18,13 +32,12 @@
 //
 
 // Perform all required calculations and
-// print results on standard out
-void calculate (const std::map<std::string, std::string>& query_params);
+// return the response structure
+response_t calculate (const response_t& response);
 
 // validate the query string read in by the program
-inline bool isvalid (const std::map<std::string, std::string>& query_params) {
-    return !query_params.empty();
-}
+response_t isvalid (const std::map<std::string, std::string>& query_params);
+
 
 // Specific gas constant for water vapor
 constexpr double R = 461.514;
@@ -43,22 +56,22 @@ constexpr double cvt_f_c(double f) { return (5.0 / 9.0) * (f - 32.0); }
 
 // return vapor pressure over liquid water in hPa
 // using air_temp in celsius.
-constexpr double vapor_pres_oaml (double air_temp) {
+inline double vapor_pres_oaml (double air_temp) {
     // OAML / Tetens
     return 6.112 * std::exp((17.269 * air_temp) / (air_temp + 273.16 - 35.86));
 }
-constexpr double vapor_pres_noaa (double air_temp) {
+inline double vapor_pres_noaa (double air_temp) {
     // NOAA
     return 6.112 * std::exp((17.62*air_temp) / (243.12 + air_temp));
 }
-constexpr double vapor_pres_wmo (double air_temp) {
+inline double vapor_pres_wmo (double air_temp) {
     // USAF/ WMO
     return 6.112 * std::pow(10.0, (7.5*air_temp) / (237.3 + air_temp));
 }
 
 // compute absolute humidity in kg / m**3
 // using air_temp in celsius.
-constexpr double abs_humidity (double air_temp) {
+inline double abs_humidity (double air_temp) {
     // WMO
     // convert vapor_pressure from hPa to Pa
     // vapor pressure takes C, denominator takes K

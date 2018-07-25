@@ -20,48 +20,58 @@ using json = nlohmann::json;
 
 size_t cgi::read() {
     json j;
-    auto rm = std::getenv("REQUEST_METHOD");
-    if (rm == nullptr) {
-        json j;
-        j["message"] = "CGI Error: No method specified.";
-        std::cout << json_header() << j << std::endl;
-        return 0;
-    }
-    string method(rm);
-    if (method.size() < 3 || method == "(null)") {
-        std::cout << "CGI Error: Invalid method specified [" << method << "].\n";
-        return 0;
-    }
-    if (method == "GET") {
-        return parse_query_string(string(std::getenv("QUERY_STRING")));
-    } else if (method == "POST") {
-        std::string line;
-        std::string doc;
-        constexpr auto limit = 1024u * 10u;
-        while (getline(std::cin, line) && doc.size() < limit) {
-            doc += line;
-            doc.append(1, '\n');
-            line.clear();
+    j["expected"] = "REQUEST_METHOD=GET";
+    auto method = std::getenv("REQUEST_METHOD");
+    j["actual"] = nullptr;
+    if (method == nullptr) {
+        j["message"] = "CGI Error: No REQUEST_METHOD specified.";
+        std::cout << json_header(StatusCode::bad) << j.dump(4) << std::endl;
+    } else if (strcmp(method,"GET") != 0) {
+        j["message"] = "CGI Error: Invalid or unsupported method specified.";
+        j["actual"] = method;
+        std::cout << json_header(StatusCode::bad) << j.dump(4) << std::endl;
+    } else {
+        auto qs = std::getenv("QUERY_STRING");
+        if (qs == nullptr) {
+            j["message"] = "CGI Error: No QUERY_STRING provided.";
+            j["expected"] = "QUERY_STRING=air_temp=N (where 'N' is -45 to 60 C)";
+            std::cout << json_header(StatusCode::bad) << j.dump(4) << std::endl;
+        } else {
+            return parse_query_string(string(qs));
         }
-        kvp.emplace("POST content", doc);
-        return doc.size();
-
     }
-    std::cout << "CGI Error: Unsupported method [" << method << "].\n";
+
     return 0;
 }
 
 size_t cgi::parse_query_string(const string& qs) {
     if (qs.empty()) return 0;
-
     std::istringstream iss(qs);
     string pair;
+    string key;
     while (std::getline(iss, pair, '&')) {
         auto decoded = decode(pair);
         auto pos = decoded.find('=');
         if (pos != std::string::npos) {
-            kvp[decoded.substr(0,pos)] = decoded.substr(pos+1);
+            key = decoded.substr(0,pos);
+            if (key == "air_temp" || key == "uom") {
+                kvp[key] = decoded.substr(pos+1);
+            } else {
+                json j;
+                j["message"] = "CGI Error: Unknown QUERY_STRING key.";
+                j["expected"] = {"air_temp", "uom"};
+                j["actual"] = key;
+                std::cout << json_header(StatusCode::bad) << j.dump(4) << std::endl;
+                return 0;
+            }
         }
+    }
+    if (kvp.empty()) {
+        json j;
+        j["message"] = "CGI Error: Malformed QUERY_STRING.";
+        j["expected"] = "key/value pair";
+        j["actual"] = qs;
+        std::cout << json_header(StatusCode::bad) << j.dump(4) << std::endl;
     }
     return kvp.size();
 }

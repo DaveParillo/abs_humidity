@@ -10,14 +10,14 @@ ifneq ($(OS),Windows_NT)
 	CXXFLAGS += -DHAVE_SETENV
 endif
 
-INCLUDES=-I/usr/local/include/nlohmann
+INCLUDES=-I../json/single_include
 
-PROGS = cgi
+PROGS = abs_humidity
 
 all: $(PROGS)
 
-cgi : clean
-	${CXX} ${CXXFLAGS} -o $@ util.cpp calc.cpp cgi.cpp main.cpp
+abs_humidity : clean
+	${CXX} ${CXXFLAGS} ${INCLUDES}  -o $@ util.cpp calc.cpp cgi.cpp main.cpp
 
 clean:
 	rm -f $(PROGS)
