@@ -42,8 +42,8 @@ response_t isvalid (const std::map<std::string, std::string>& query_params);
 // build a json object for a specific UOM and value pair
 nlohmann::json make_json_param(const std::string& uom, const double& value);
 
-// build a json response object for a specific METOC parameter, UOM and value triple
-nlohmann::json make_json_param(const std::string& param, const std::string& uom, const double& value);
+// determine if a string can be converted to a numeric type
+bool numeric(std::string value);
 
 // Specific gas constant for water vapor
 constexpr double R = 461.514;
