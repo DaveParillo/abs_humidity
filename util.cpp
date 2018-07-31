@@ -47,7 +47,7 @@ string decode(const string& source) {
 
 string json_header (StatusCode code) {
     std::ostringstream head;
-    head << "HTTP/1.1 " << int(code) << ' ';
+    head << "Status: " << int(code) << ' ';
 
     if (code == StatusCode::ok) {
         head << "OK\n";

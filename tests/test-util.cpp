@@ -22,7 +22,7 @@ SCENARIO( "Compute the invariants of to_hex" ) {
 }
 
 SCENARIO ("Check if json_header works") {
-    std::string expected = "HTTP/1.1 200 OK\nContent-type: application/json\n\n";
+    std::string expected = "Status: 200 OK\nContent-type: application/json\n\n";
     WHEN ("json header is called with no parameters") {
         THEN("content type for json and 200 OK returned") {
             CHECK(expected == json_header());
@@ -37,7 +37,7 @@ SCENARIO ("Check if json_header works") {
     }
     WHEN ("json header is passed StatusCode::bad") {
         THEN("content type for json and 400 Bad Request returned") {
-            expected = "HTTP/1.1 400 Bad Request\nContent-type: application/json\n\n";
+            expected = "Status: 400 Bad Request\nContent-type: application/json\n\n";
             CHECK(expected == json_header(StatusCode::bad));
         }
 
