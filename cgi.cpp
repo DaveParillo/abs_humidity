@@ -23,6 +23,7 @@ size_t cgi::read() {
     j["expected"] = "REQUEST_METHOD=GET";
     auto method = std::getenv("REQUEST_METHOD");
     j["actual"] = nullptr;
+    j["status"] = "error";
     if (method == nullptr) {
         j["message"] = "CGI Error: No REQUEST_METHOD specified.";
         std::cout << json_header(StatusCode::bad) << j.dump(4) << std::endl;
@@ -61,6 +62,7 @@ size_t cgi::parse_query_string(const string& qs) {
                 j["message"] = "CGI Error: Unknown QUERY_STRING key.";
                 j["expected"] = {"air_temp", "uom"};
                 j["actual"] = key;
+                j["status"] = "error";
                 std::cout << json_header(StatusCode::bad) << j.dump(4) << std::endl;
                 return 0;
             }
@@ -71,6 +73,7 @@ size_t cgi::parse_query_string(const string& qs) {
         j["message"] = "CGI Error: Malformed QUERY_STRING.";
         j["expected"] = "key/value pair";
         j["actual"] = qs;
+        j["status"] = "error";
         std::cout << json_header(StatusCode::bad) << j.dump(4) << std::endl;
     }
     return kvp.size();
