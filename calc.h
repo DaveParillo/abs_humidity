@@ -9,6 +9,7 @@
 // A pair of response values from the calculator
 struct response_t {
     bool valid = false;
+    bool echo_input = false;
     nlohmann::json doc;
     response_t() = default;
     response_t(bool v, nlohmann::json d) 
@@ -38,6 +39,11 @@ response_t calculate (const response_t& response);
 // validate the query string read in by the program
 response_t isvalid (const std::map<std::string, std::string>& query_params);
 
+// build a json object for a specific UOM and value pair
+nlohmann::json make_json_param(const std::string& uom, const double& value);
+
+// build a json response object for a specific METOC parameter, UOM and value triple
+nlohmann::json make_json_param(const std::string& param, const std::string& uom, const double& value);
 
 // Specific gas constant for water vapor
 constexpr double R = 461.514;
