@@ -10,7 +10,7 @@ ifneq ($(OS),Windows_NT)
 	CXXFLAGS += -DHAVE_SETENV
 endif
 
-INCLUDES=-I../json/single_include
+INCLUDES=-I../include/json/single_include
 
 PROGS = abs_humidity
 
