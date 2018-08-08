@@ -22,3 +22,10 @@ SCENARIO( "Compute the invariants of calculate" ) {
 	}
     }
 }
+
+SCENARIO( "Check if calculate runs for a basic response structure" ) {
+    response_t r = {true, {"status","success"}};
+    GIVEN( "A base response structure" ) {
+        CHECK(calculate(r).doc["status"] == r["status"])
+    }
+}
