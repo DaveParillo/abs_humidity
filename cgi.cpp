@@ -55,12 +55,12 @@ size_t cgi::parse_query_string(const string& qs) {
         auto pos = decoded.find('=');
         if (pos != std::string::npos) {
             key = decoded.substr(0,pos);
-            if (key == "air_temp" || key == "uom") {
-                kvp[key] = decoded.substr(pos+1);
+            if (key == "air_temp" || key == "uom" || key == "output_uom") {
+                kvp.emplace(key, decoded.substr(pos+1));
             } else {
                 json j;
                 j["message"] = "CGI Error: Unknown QUERY_STRING key.";
-                j["expected"] = {"air_temp", "uom"};
+                j["expected"] = {"air_temp", "uom", "output_uom"};
                 j["actual"] = key;
                 j["status"] = "error";
                 std::cout << json_header(StatusCode::bad) << j.dump(4) << std::endl;
