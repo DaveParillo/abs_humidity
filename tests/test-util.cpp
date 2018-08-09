@@ -14,10 +14,10 @@ SCENARIO( "Convert characters to hex" ) {
 
 SCENARIO( "Convert characters from hex" ) {
     GIVEN( "a valid digit" ) {
-        char* inputs = "0123456789";
+        char inputs[] = "0123456789";
         WHEN( "a digit is passed in" ) {
             THEN( "should receive the numeric version of the character" ) {
-                for (char expected = 0; expected < 10; ++expected) {
+                for (auto expected = 0u; expected < 10; ++expected) {
                     CAPTURE(expected);
                     REQUIRE(from_hex(inputs[expected]) == expected);
                 }
