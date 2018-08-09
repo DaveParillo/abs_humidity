@@ -6,11 +6,17 @@
 
 #include <nlohmann/json.hpp>
 
+struct input_data_t {
+    double air_temp = -99.0;
+    std::string uom = "kg/m**3";
+};
+
 // A pair of response values from the calculator
 struct response_t {
     bool valid = false;
     bool echo_input = false;
     nlohmann::json doc;
+    input_data_t input;
     response_t() = default;
     response_t(bool v, nlohmann::json d) 
         : valid{v}, doc{d} 
@@ -37,7 +43,13 @@ struct response_t {
 response_t calculate (const response_t& response);
 
 // validate the query string read in by the program
-response_t isvalid (const std::map<std::string, std::string>& query_params);
+response_t validate (const std::map<std::string, std::string>& query_params);
+
+// helpers for validate
+void validate_air_temp  (const std::map<std::string, std::string>& query_params, response_t* r);
+void validate_input_uom (const std::map<std::string, std::string>& query_params, response_t* r);
+void validate_output_uom (const std::map<std::string, std::string>& query_params, response_t* r);
+
 
 // build a json object for a specific UOM and value pair
 nlohmann::json make_json_param(const std::string& uom, const double& value);
@@ -62,17 +74,8 @@ constexpr double cvt_f_c(double f) { return (5.0 / 9.0) * (f - 32.0); }
 
 // return vapor pressure over liquid water in hPa
 // using air_temp in celsius.
-inline double vapor_pres_oaml (double air_temp) {
-    // OAML / Tetens
-    return 6.112 * std::exp((17.269 * air_temp) / (air_temp + 273.16 - 35.86));
-}
-inline double vapor_pres_noaa (double air_temp) {
-    // NOAA
-    return 6.112 * std::exp((17.62*air_temp) / (243.12 + air_temp));
-}
 inline double vapor_pres_wmo (double air_temp) {
-    // USAF/ WMO
-    return 6.112 * std::pow(10.0, (7.5*air_temp) / (237.3 + air_temp));
+    return 6.112 * std::exp((17.62*air_temp) / (243.12 + air_temp));
 }
 
 // compute absolute humidity in kg / m**3

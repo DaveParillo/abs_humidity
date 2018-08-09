@@ -1,31 +1,27 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "../calc.h"
 #include <doctest.h>
+#include <nlohmann/json.hpp>
 
-SCENARIO( "TBD" ) {
-    GIVEN( "TBD" ) {
-	WHEN( "something" ) {
-	    THEN( "something" ) {
-		CHECK( 1 == 1);
-		//REQUIRE(to_hex(1) == false);
-	    }
-	}
+using json = nlohmann::json;
+
+SCENARIO( "Check if calculate runs with validated inputs" ) {
+    GIVEN( "A simple valid response structure" ) {
+        response_t expected = {true, json::object({ {"status","success"} })};
+
+        expected.input.air_temp = 22;
+        auto actual = calculate(expected);
+        REQUIRE(actual.doc["status"] == expected.doc["status"]);
+        REQUIRE(actual.valid == expected.valid);
+    }
+    GIVEN( "input air temp out of bounds for vapor pressure" ) {
+        response_t expected = {true, json::object({ {"status","success"} })};
+
+        expected.input.air_temp = 60.1;
+        auto actual = calculate(expected);
+        REQUIRE(actual.doc["status"] == std::string("warn"));
+        REQUIRE(actual.valid == true);
     }
 }
 
-SCENARIO( "Compute the invariants of calculate" ) {
 
-    GIVEN( "an invalid char" ) {
-	THEN( "false should be returned for int input" ) {
-	    //REQUIRE(to_hex(1) == false);
-	    CHECK( 1 == 0);
-	}
-    }
-}
-
-SCENARIO( "Check if calculate runs for a basic response structure" ) {
-    response_t r = {true, {"status","success"}};
-    GIVEN( "A base response structure" ) {
-        CHECK(calculate(r).doc["status"] == r["status"])
-    }
-}
